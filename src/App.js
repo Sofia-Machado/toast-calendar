@@ -150,7 +150,7 @@ export default function App() {
       <div>
         <ul>
           {futureTasks.map((task, i) => {
-            return <li key={task.title + i}>{task.title}</li>
+            return <li key={task.title + i} onDrag={console.log('dragged')} onDrop={console.log('dropped')}>{task.title}</li>
           })}
         </ul>
       </div>

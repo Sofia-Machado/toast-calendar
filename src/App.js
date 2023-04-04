@@ -15,7 +15,7 @@ export default function App() {
     view: 'day',
     
 };
-  const calendars = [{ id: 'cal1', name: 'Personal' }];
+
   const initialEvents = [
     {
       id: '1',
@@ -50,8 +50,18 @@ export default function App() {
       state: eventData.state,
       isPrivate: eventData.isPrivate,
     };
-
     calendar.current.calendarInstance.createEvents([event]);
+  };
+
+  
+  const onBeforeUpdateEvent = (updateData) => {
+    console.group('onBeforeUpdateEvent');
+    console.log(updateData);
+    console.groupEnd();
+
+    const targetEvent = updateData.event;
+    const changes = { ...updateData.changes };
+    calendar.current.calendarInstance.updateEvent(targetEvent.id, targetEvent.calendarId, changes);
   };
 
   // move through days
@@ -100,8 +110,8 @@ export default function App() {
         ref={calendar}
         {...options}
         height="900px"
-        calendars={calendars}
         events={initialEvents}
+        onBeforeUpdateEvent={onBeforeUpdateEvent}
         onBeforeCreateEvent={onBeforeCreateEvent}
     />
     </>

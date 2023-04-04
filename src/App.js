@@ -53,7 +53,14 @@ export default function App() {
     calendar.current.calendarInstance.createEvents([event]);
   };
 
-  
+  const onBeforeDeleteEvent = (res) => {
+    console.group('onBeforeDeleteEvent');
+    console.log('Event Info : ', res.title);
+    console.groupEnd();
+    const { id, calendarId } = res;
+    calendar.current.calendarInstance.deleteEvent(id, calendarId);
+  };
+
   const onBeforeUpdateEvent = (updateData) => {
     console.group('onBeforeUpdateEvent');
     console.log(updateData);
@@ -113,6 +120,7 @@ export default function App() {
         events={initialEvents}
         onBeforeUpdateEvent={onBeforeUpdateEvent}
         onBeforeCreateEvent={onBeforeCreateEvent}
+        onBeforeDeleteEvent={onBeforeDeleteEvent}
     />
     </>
   );

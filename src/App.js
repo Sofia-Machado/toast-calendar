@@ -8,11 +8,6 @@ import './App.css';
 export default function App() {
 
   const calendar = useRef();
-  /* const calendar = new Calendar('#container', {
-    useFormPopup: true,
-    useDetailPopup: true,
-    defaultView: 'day',
-  }); */
 
   const options = {
     useFormPopup: true,
@@ -27,33 +22,46 @@ export default function App() {
       calendarId: 'cal1',
       title: 'Lunch',
       category: 'time',
-      start: '2023-04-10T12:00:00',
-      end: '2023-04-10T13:30:00',
+      start: '2023-04-04T12:00:00',
+      end: '2023-04-04T13:30:00',
     },
     {
       id: '2',
       calendarId: 'cal1',
       title: 'Coffee Break',
       category: 'time',
-      start: '2023-04-28T15:00:00',
-      end: '2023-04-28T15:30:00',
+      start: '2023-04-04T15:00:00',
+      end: '2023-04-04T15:30:00',
     },
   ];
 
+  
+  const onBeforeCreateEvent = (eventData) => {
+    const event = {
+      calendarId: eventData.calendarId || '',
+      id: String(Math.random()),
+      title: eventData.title,
+      isAllday: eventData.isAllday,
+      start: eventData.start,
+      end: eventData.end,
+      category: eventData.isAllday ? 'allday' : 'time',
+      dueDateClass: '',
+      location: eventData.location,
+      state: eventData.state,
+      isPrivate: eventData.isPrivate,
+    };
+
+    calendar.current.calendarInstance.createEvents([event]);
+  };
+
+  // move through days
   function moveToNextOrPrevRange(offset) {
     calendar.current.calendarInstance.move(offset)
   }
   
   function onClickTodayBtn() {
-    calendar.today();
+    calendar.current.calendarInstance.today();
   }
-
-  const onClickNav = (ev) => {
-    if ((ev.target).tagName === 'BUTTON') {
-      const button = ev.target;
-      const actionName = (button.getAttribute('data-action') ?? 'month').replace('move-', '');
-    }
-  };
 
   return (
     <>
@@ -94,6 +102,7 @@ export default function App() {
         height="900px"
         calendars={calendars}
         events={initialEvents}
+        onBeforeCreateEvent={onBeforeCreateEvent}
     />
     </>
   );

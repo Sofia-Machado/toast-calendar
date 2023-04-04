@@ -12,9 +12,8 @@ export default function App() {
   const options = {
     useFormPopup: true,
     useDetailPopup: true,
-    view: 'day',
-    
-};
+    view: 'day'
+  };
 
   const initialEvents = [
     {
@@ -83,7 +82,8 @@ export default function App() {
       location: eventData.location,
       state: eventData.state,
       isPrivate: eventData.isPrivate,
-      isPending: eventData.isPending
+      isPending: eventData.isPending,
+      isReadOnly: eventData.isReadOnly
     };
     calendar.current.calendarInstance.createEvents([event]);
   };
@@ -117,7 +117,7 @@ export default function App() {
 
   return (
     <>
-      <h1>🍞📅 TOAST UI Calendar + React.js</h1>
+      <h1>📅</h1>
       <div>
         <span>
           <button

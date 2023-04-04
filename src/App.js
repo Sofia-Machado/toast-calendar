@@ -19,7 +19,7 @@ export default function App() {
   const initialEvents = [
     {
       id: '1',
-      calendarId: 'cal1',
+      calendarId: '2',
       title: 'Lunch',
       category: 'time',
       start: '2023-04-04T12:00:00',
@@ -27,7 +27,7 @@ export default function App() {
     },
     {
       id: '2',
-      calendarId: 'cal1',
+      calendarId: '2',
       title: 'Coffee Break',
       category: 'time',
       start: '2023-04-04T15:00:00',
@@ -35,6 +35,40 @@ export default function App() {
     },
   ];
 
+  const futureTasks = [
+    {
+      title: 'Call Sandra',
+      category: 'Reserved Call',
+    },
+    {
+      title: 'Call Julia',
+      category: 'time',
+    }
+  ] 
+
+  const possibleCalendars = [
+    {
+      id: '0',
+      name: 'Reserved Call',
+      backgroundColor: '#9e5fff',
+      borderColor: '#9e5fff',
+      dragBackgroundColor: '#9e5fff',
+    },
+    {
+      id: '1',
+      name: 'Optional Call',
+      backgroundColor: '#00a9ff',
+      borderColor: '#00a9ff',
+      dragBackgroundColor: '#00a9ff',
+    },
+    {
+      id: '2',
+      name: 'Task',
+      backgroundColor: '#ffc501',
+      borderColor: '#ffc501',
+      dragBackgroundColor: '#ffc501',
+    }
+  ];
   
   const onBeforeCreateEvent = (eventData) => {
     const event = {
@@ -49,6 +83,7 @@ export default function App() {
       location: eventData.location,
       state: eventData.state,
       isPrivate: eventData.isPrivate,
+      isPending: eventData.isPending
     };
     calendar.current.calendarInstance.createEvents([event]);
   };
@@ -110,11 +145,19 @@ export default function App() {
             Next
           </button>
         </span>
-        <span className="render-range">selectedDateRangeText</span>
+      </div>
+
+      <div>
+        <ul>
+          {futureTasks.map((task, i) => {
+            return <li key={task.title + i}>{task.title}</li>
+          })}
+        </ul>
       </div>
 
       <Calendar
         ref={calendar}
+        calendars={possibleCalendars}
         {...options}
         height="900px"
         events={initialEvents}

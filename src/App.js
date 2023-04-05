@@ -39,12 +39,12 @@ export default function App() {
     {
       id:'0',
       title: 'Call Sandra',
-      category: 'Reserved Call',
+      calendarId: '0',
     },
     {
       id:'1',
       title: 'Call Julia',
-      category: 'time',
+      calendarId: '1',
     }
   ] 
 
@@ -118,9 +118,10 @@ export default function App() {
     calendar.current.calendarInstance.today();
   }
 
-  function handleDragStart(e, id) {
-    console.log('dragstart:', id);
-    e.dataTransfer.setData("text/plain", id);
+  function handleDragStart(e, task) {
+    const data = JSON.stringify(task);
+    e.dataTransfer.setData("text/plain", data);
+    console.log('dragstart:', data);
   }
   const handleDragOver = useCallback((e) => {
     e.preventDefault(); 
@@ -130,9 +131,10 @@ export default function App() {
   
   const handleDrop = useCallback((e) => {
     e.preventDefault();
-      const data = e.dataTransfer.getData('text');
+      const data = JSON.parse(e.dataTransfer.getData('text'));
       console.log('onDrop:', data)
-      calendar.current.calendarInstance.createEvents([data])
+      onBeforeCreateEvent(data);
+    
   }, [])
 
   useEffect(() => {
@@ -181,7 +183,7 @@ export default function App() {
           {futureTasks.map((task, i) => {
             return <li key={task.title + i} draggable 
             className='draggable'
-            onDragStart={(e) => handleDragStart(e, task.title)}
+            onDragStart={(e) => handleDragStart(e, task)}
            >{task.title}</li>
           })}
         </ul>

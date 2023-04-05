@@ -13,6 +13,7 @@ const initialEvents = [
     category: 'time',
     start: '2023-04-05T12:00:00',
     end: '2023-04-05T13:30:00',
+   
   },
   {
     id: '2',
@@ -21,32 +22,90 @@ const initialEvents = [
     category: 'time',
     start: '2023-04-05T15:00:00',
     end: '2023-04-05T15:30:00',
+    
   },
 ];
 
+const futureTasks = [
+  {
+    id:'0',
+    title: 'Call Sandra',
+    calendarId: '0',
+  },
+  {
+    id:'1',
+    title: 'Call Julia',
+    calendarId: '1',
+  }
+] 
+
 export default function App() {
-  const [calendarEvents, setCalendarEvents] = useState(initialEvents);
 
   const calendar = useRef();
-
   const options = {
     useFormPopup: true,
     useDetailPopup: true,
-    view: 'day'
+    view: 'day',
+    week: {
+      hourStart: 9,
+      hourEnd: 18,
+      taskView: false,
+    },
+    gridSelection: {
+      enableDblClick: true,
+      enableClick: false,
+    },
+    template: {
+      timegridDisplayPrimaryTime({ time }) {
+        let minutes = time.getMinutes();
+        console.log('minutes', minutes)
+        if (minutes < 10) {
+          minutes = `0${minutes}`
+        }
+        return `${time.getHours()} : ${minutes}`;
+    },
+      popupIsAllday() {
+        return 'All day';
+      },
+      popupStateFree() {
+        return 'Optional';
+      },
+      popupStateBusy() {
+        return 'Required';
+      },
+      titlePlaceholder() {
+        return 'Enter task';
+      },
+      startDatePlaceholder() {
+        return 'Start date';
+      },
+      endDatePlaceholder() {
+        return 'End date';
+      },
+      popupSave() {
+        return 'Add Event';
+      },
+      popupUpdate() {
+        return 'Update Event';
+      },
+      popupEdit() {
+        return 'Edit';
+      },
+      popupDelete() {
+        return 'Remove';
+      },
+      popupDetailTitle: function (data) {
+        return 'Detail of ' + data.title;
+      },
+      popupDetailRecurrenceRule({ recurrenceRule }) {
+        return recurrenceRule;
+      },
+      popupDetailBody() {
+        return '<div id="tui-do-calendar-detail">123</div>';
+      },
+    },
   };
 
-  const futureTasks = [
-    {
-      id:'0',
-      title: 'Call Sandra',
-      calendarId: '0',
-    },
-    {
-      id:'1',
-      title: 'Call Julia',
-      calendarId: '1',
-    }
-  ] 
 
   const possibleCalendars = [
     {
@@ -55,6 +114,9 @@ export default function App() {
       backgroundColor: '#9e5fff',
       borderColor: '#9e5fff',
       dragBackgroundColor: '#9e5fff',
+      raw: {
+        icon: '<i class="fa fa-check"></i>'
+      }
     },
     {
       id: '1',
@@ -72,6 +134,7 @@ export default function App() {
     }
   ];
   
+  // Create Events
   const onBeforeCreateEvent = (eventData) => {
     const event = {
       calendarId: eventData.calendarId || '',
@@ -91,6 +154,7 @@ export default function App() {
     calendar.current.calendarInstance.createEvents([event]);
   };
 
+  // Delete Events
   const onBeforeDeleteEvent = (res) => {
     console.group('onBeforeDeleteEvent');
     console.log('Event Info : ', res.title);
@@ -99,30 +163,32 @@ export default function App() {
     calendar.current.calendarInstance.deleteEvent(id, calendarId);
   };
 
+  // Update Events
   const onBeforeUpdateEvent = (updateData) => {
     console.group('onBeforeUpdateEvent');
     console.log(updateData);
     console.groupEnd();
-
     const targetEvent = updateData.event;
     const changes = { ...updateData.changes };
     calendar.current.calendarInstance.updateEvent(targetEvent.id, targetEvent.calendarId, changes);
   };
 
-  // move through days
+  //Move through days
   function moveToNextOrPrevRange(offset) {
     calendar.current.calendarInstance.move(offset)
   }
-  
+
   function onClickTodayBtn() {
     calendar.current.calendarInstance.today();
   }
 
+  //Drag and Drop functions
   function handleDragStart(e, task) {
     const data = JSON.stringify(task);
     e.dataTransfer.setData("text/plain", data);
     console.log('dragstart:', data);
   }
+
   const handleDragOver = useCallback((e) => {
     e.preventDefault(); 
     e.stopPropagation();
@@ -195,17 +261,12 @@ export default function App() {
         calendars={possibleCalendars}
         {...options}
         height="900px"
-        events={calendarEvents}
+        events={initialEvents}
         onBeforeUpdateEvent={onBeforeUpdateEvent}
         onBeforeCreateEvent={onBeforeCreateEvent}
         onBeforeDeleteEvent={onBeforeDeleteEvent}
-      
-        onDragOver={(e) => {
-          handleDragOver(e)
-        }}
-        onDrop={(e) => {
-          handleDrop(e);
-        }}
+        onDragOver={(e) => handleDragOver(e)}
+        onDrop={(e) => handleDrop(e)}
     />
     </>
   );

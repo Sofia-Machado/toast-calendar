@@ -1,111 +1,106 @@
-import { useCallback, useState, useRef, useEffect } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 import Calendar from '@toast-ui/react-calendar';
+import { BsFillTelephoneOutboundFill } from 'react-icons/bs';
 import '@toast-ui/calendar/dist/toastui-calendar.min.css';
 import 'tui-date-picker/dist/tui-date-picker.css';
 import 'tui-time-picker/dist/tui-time-picker.css';
 import './App.css';
 
-const initialEvents = [
-  {
-    id: '1',
-    calendarId: '2',
-    title: 'Lunch',
-    category: 'time',
-    start: '2023-04-05T12:00:00',
-    end: '2023-04-05T13:30:00',
-   
-  },
-  {
-    id: '2',
-    calendarId: '2',
-    title: 'Coffee Break',
-    category: 'time',
-    start: '2023-04-05T15:00:00',
-    end: '2023-04-05T15:30:00',
-    
-  },
-];
-
-const futureTasks = [
-  {
-    id:'0',
-    title: 'Call Sandra',
-    calendarId: '0',
-  },
-  {
-    id:'1',
-    title: 'Call Julia',
-    calendarId: '1',
-  }
-] 
 
 export default function App() {
 
+  const initialEvents = [
+    {
+      id: '1',
+      calendarId: '2',
+      title: 'Lunch',
+      category: 'time',
+      start: '2023-04-05T12:00:00',
+      end: '2023-04-05T13:30:00',
+      
+    },
+    {
+      id: '2',
+      calendarId: '2',
+      title: 'Coffee Break',
+      category: 'time',
+      start: '2023-04-05T15:00:00',
+      end: '2023-04-05T15:30:00',
+      raw: {
+        icon: <BsFillTelephoneOutboundFill />
+      }
+    },
+  ];
+  
+  const futureTasks = [
+    {
+      id:'0',
+      title: 'Call Sandra',
+      calendarId: '0',
+    },
+    {
+      id:'1',
+      title: 'Call Julia',
+      calendarId: '1',
+    }
+  ] 
   const calendar = useRef();
   const options = {
     useFormPopup: true,
     useDetailPopup: true,
     view: 'day',
     week: {
-      hourStart: 9,
-      hourEnd: 18,
+      hourStart: 8,
+      hourEnd: 19,
       taskView: false,
     },
     gridSelection: {
       enableDblClick: true,
       enableClick: false,
     },
-    template: {
+    template: {  
+      time: function(event) {
+        let html;
+        if (event.calendarId === '0') {
+          html = '❗';
+        }
+        else if (event.calendarId === '1') {
+          html = '⏳';
+        }
+        else if (event.calendarId === '2') {
+          html = '📂';
+        }
+        return '<span class="calendar-event-task">' + html +  event.title + '</span>';
+      },
+      goingDuration: function (event) {
+        return (
+          '<span class="calendar-event-going-duration" style="color: #12222;">' +
+          event.goingDuration +
+          '</span>'
+        );
+      },
+         comingDuration: function (event) {
+            return (
+              '<span class="calendar-event-coming-duration" style="color: #74222;">' +
+              event.comingDuration +
+              '</span>'
+            );
+          },
       timegridDisplayPrimaryTime({ time }) {
         let minutes = time.getMinutes();
-        console.log('minutes', minutes)
         if (minutes < 10) {
-          minutes = `0${minutes}`
+          minutes = `0${minutes}`;
         }
         return `${time.getHours()} : ${minutes}`;
+      },
+      popupDetailRepeat: function(model) {
+        return model.recurrenceRule;
     },
-      popupIsAllday() {
-        return 'All day';
-      },
-      popupStateFree() {
-        return 'Optional';
-      },
-      popupStateBusy() {
-        return 'Required';
-      },
-      titlePlaceholder() {
-        return 'Enter task';
-      },
-      startDatePlaceholder() {
-        return 'Start date';
-      },
-      endDatePlaceholder() {
-        return 'End date';
-      },
-      popupSave() {
-        return 'Add Event';
-      },
-      popupUpdate() {
-        return 'Update Event';
-      },
-      popupEdit() {
-        return 'Edit';
-      },
-      popupDelete() {
-        return 'Remove';
-      },
-      popupDetailTitle: function (data) {
-        return 'Detail of ' + data.title;
-      },
-      popupDetailRecurrenceRule({ recurrenceRule }) {
-        return recurrenceRule;
-      },
-      popupDetailBody() {
-        return '<div id="tui-do-calendar-detail">123</div>';
-      },
+    popupDetailBody: function(model) {
+        return model.body;
+    }
     },
   };
-
 
   const possibleCalendars = [
     {
@@ -114,9 +109,6 @@ export default function App() {
       backgroundColor: '#9e5fff',
       borderColor: '#9e5fff',
       dragBackgroundColor: '#9e5fff',
-      raw: {
-        icon: '<i class="fa fa-check"></i>'
-      }
     },
     {
       id: '1',
@@ -256,11 +248,10 @@ export default function App() {
       </div>
           
       <Calendar
-        className='dropzone'
+        className='calendar'
         ref={calendar}
         calendars={possibleCalendars}
         {...options}
-        height="900px"
         events={initialEvents}
         onBeforeUpdateEvent={onBeforeUpdateEvent}
         onBeforeCreateEvent={onBeforeCreateEvent}

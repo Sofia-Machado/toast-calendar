@@ -1,11 +1,31 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useState, useRef, useEffect } from 'react';
 import Calendar from '@toast-ui/react-calendar';
 import '@toast-ui/calendar/dist/toastui-calendar.min.css';
 import 'tui-date-picker/dist/tui-date-picker.css';
 import 'tui-time-picker/dist/tui-time-picker.css';
 import './App.css';
 
+const initialEvents = [
+  {
+    id: '1',
+    calendarId: '2',
+    title: 'Lunch',
+    category: 'time',
+    start: '2023-04-05T12:00:00',
+    end: '2023-04-05T13:30:00',
+  },
+  {
+    id: '2',
+    calendarId: '2',
+    title: 'Coffee Break',
+    category: 'time',
+    start: '2023-04-05T15:00:00',
+    end: '2023-04-05T15:30:00',
+  },
+];
+
 export default function App() {
+  const [calendarEvents, setCalendarEvents] = useState(initialEvents);
 
   const calendar = useRef();
 
@@ -15,31 +35,14 @@ export default function App() {
     view: 'day'
   };
 
-  const initialEvents = [
-    {
-      id: '1',
-      calendarId: '2',
-      title: 'Lunch',
-      category: 'time',
-      start: '2023-04-04T12:00:00',
-      end: '2023-04-04T13:30:00',
-    },
-    {
-      id: '2',
-      calendarId: '2',
-      title: 'Coffee Break',
-      category: 'time',
-      start: '2023-04-04T15:00:00',
-      end: '2023-04-04T15:30:00',
-    },
-  ];
-
   const futureTasks = [
     {
+      id:'0',
       title: 'Call Sandra',
       category: 'Reserved Call',
     },
     {
+      id:'1',
       title: 'Call Julia',
       category: 'time',
     }
@@ -115,6 +118,32 @@ export default function App() {
     calendar.current.calendarInstance.today();
   }
 
+  function handleDragStart(e, id) {
+    console.log('dragstart:', id);
+    e.dataTransfer.setData("text/plain", id);
+  }
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault(); 
+    e.stopPropagation();
+    return false;
+  }, [])
+  
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+      const data = e.dataTransfer.getData('text');
+      console.log('onDrop:', data)
+      calendar.current.calendarInstance.createEvents([data])
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener('dragover', handleDragOver);
+    window.addEventListener('drop', handleDrop);
+    return () => {
+        window.removeEventListener('dragover', handleDragOver);
+        window.removeEventListener('drop', handleDrop);
+    };
+}, [handleDragOver, handleDrop]);
+
   return (
     <>
       <h1>📅</h1>
@@ -150,20 +179,31 @@ export default function App() {
       <div>
         <ul>
           {futureTasks.map((task, i) => {
-            return <li key={task.title + i} onDrag={console.log('dragged')} onDrop={console.log('dropped')}>{task.title}</li>
+            return <li key={task.title + i} draggable 
+            className='draggable'
+            onDragStart={(e) => handleDragStart(e, task.title)}
+           >{task.title}</li>
           })}
         </ul>
       </div>
-
+          
       <Calendar
+        className='dropzone'
         ref={calendar}
         calendars={possibleCalendars}
         {...options}
         height="900px"
-        events={initialEvents}
+        events={calendarEvents}
         onBeforeUpdateEvent={onBeforeUpdateEvent}
         onBeforeCreateEvent={onBeforeCreateEvent}
         onBeforeDeleteEvent={onBeforeDeleteEvent}
+      
+        onDragOver={(e) => {
+          handleDragOver(e)
+        }}
+        onDrop={(e) => {
+          handleDrop(e);
+        }}
     />
     </>
   );

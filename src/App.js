@@ -58,7 +58,7 @@ export default function App() {
       enableDblClick: true,
       enableClick: false,
     },
-    template: {  
+    template: { 
       time: function(event) {
         let html;
         if (event.calendarId === '0') {
@@ -72,6 +72,18 @@ export default function App() {
         }
         return '<span class="calendar-event-task">' + html +  event.title + '</span>';
       },
+      popupCalendar: function (data) {
+        return 'Detail of ' + data.title;
+      },
+      popupStateFree() {
+        return 'Complete';
+      },
+      popupStateBusy() {
+        return 'Incomplete';
+      },
+      popupDetailState({ state }) {
+        return state;
+      },
       goingDuration: function (event) {
         return (
           '<span class="calendar-event-going-duration" style="color: #12222;">' +
@@ -79,13 +91,13 @@ export default function App() {
           '</span>'
         );
       },
-         comingDuration: function (event) {
-            return (
-              '<span class="calendar-event-coming-duration" style="color: #74222;">' +
-              event.comingDuration +
-              '</span>'
-            );
-          },
+      comingDuration: function (event) {
+        return (
+          '<span class="calendar-event-coming-duration" style="color: #74222;">' +
+          event.comingDuration +
+          '</span>'
+        );
+      },
       timegridDisplayPrimaryTime({ time }) {
         let minutes = time.getMinutes();
         if (minutes < 10) {
@@ -93,33 +105,27 @@ export default function App() {
         }
         return `${time.getHours()} : ${minutes}`;
       },
-      popupDetailRepeat: function(model) {
-        return model.recurrenceRule;
-    },
-    popupDetailBody: function(model) {
-        return model.body;
-    }
     },
   };
 
   const possibleCalendars = [
     {
       id: '0',
-      name: 'Reserved Call',
-      backgroundColor: '#9e5fff',
-      borderColor: '#9e5fff',
-      dragBackgroundColor: '#9e5fff',
+      name: '❗ Reserved Call',
+      backgroundColor: '#df373f',
+      borderColor: '#df373f',
+      dragBackgroundColor: '#df373f',
     },
     {
       id: '1',
-      name: 'Optional Call',
+      name: '⏳ Optional Call',
       backgroundColor: '#00a9ff',
       borderColor: '#00a9ff',
       dragBackgroundColor: '#00a9ff',
     },
     {
       id: '2',
-      name: 'Task',
+      name: '📂 Task',
       backgroundColor: '#ffc501',
       borderColor: '#ffc501',
       dragBackgroundColor: '#ffc501',

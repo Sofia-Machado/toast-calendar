@@ -15,8 +15,8 @@ export default function App() {
       calendarId: '2',
       title: 'Lunch',
       category: 'time',
-      start: '2023-04-05T12:00:00',
-      end: '2023-04-05T13:30:00',
+      start: '2023-04-06T12:00:00',
+      end: '2023-04-06T13:30:00',
       
     },
     {
@@ -24,8 +24,8 @@ export default function App() {
       calendarId: '2',
       title: 'Coffee Break',
       category: 'time',
-      start: '2023-04-05T15:00:00',
-      end: '2023-04-05T15:30:00',
+      start: '2023-04-06T15:00:00',
+      end: '2023-04-06T15:30:00',
       raw: {
         icon: <BsFillTelephoneOutboundFill />
       }
@@ -143,7 +143,6 @@ export default function App() {
       end: eventData.end,
       category: eventData.isAllday ? 'allday' : 'time',
       dueDateClass: '',
-      location: eventData.location,
       state: eventData.state,
       isPrivate: eventData.isPrivate,
       isPending: eventData.isPending,
